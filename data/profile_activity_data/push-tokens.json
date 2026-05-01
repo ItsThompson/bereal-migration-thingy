@@ -1,0 +1,26 @@
+[
+    {
+        "deviceId": "03633E83-B6F6-44EB-9004-3AEB72404930",
+        "clientVersion": "4.5.0",
+        "language": "en",
+        "region": "europe-west",
+        "platform": "ios",
+        "timezone": "Europe/London"
+    },
+    {
+        "deviceId": "03633E83-B6F6-44EB-9004-3AEB72404930",
+        "clientVersion": "4.44.1",
+        "language": "en",
+        "region": "",
+        "platform": "ios",
+        "timezone": "Europe/London"
+    },
+    {
+        "deviceId": "03633E83-B6F6-44EB-9004-3AEB72404930",
+        "clientVersion": "4.44.1",
+        "language": "en",
+        "region": "",
+        "platform": "ios",
+        "timezone": "Europe/London"
+    }
+]

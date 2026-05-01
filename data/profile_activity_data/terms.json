@@ -1,0 +1,89 @@
+[
+    {
+        "code": "gps",
+        "status": "ACCEPTED",
+        "signedAt": "2024-04-22T12:07:50.414Z",
+        "version": 1,
+        "termUrl": "https://bere.al"
+    },
+    {
+        "code": "memories",
+        "status": "ACCEPTED",
+        "signedAt": "2023-06-04T09:16:57.132Z",
+        "version": 1,
+        "termUrl": "https://bere.al"
+    },
+    {
+        "code": "terms",
+        "status": "ACCEPTED",
+        "signedAt": "2023-06-04T09:16:57.131Z",
+        "version": 1,
+        "termUrl": "https://bere.al/en/terms"
+    },
+    {
+        "code": "privacy",
+        "status": "ACCEPTED",
+        "signedAt": "2023-06-04T09:16:57.131Z",
+        "version": 1,
+        "termUrl": "https://bere.al/en/privacy"
+    },
+    {
+        "code": "camera",
+        "status": "ACCEPTED",
+        "signedAt": "2023-06-04T09:17:06.560Z",
+        "version": 1,
+        "termUrl": "https://bere.al"
+    },
+    {
+        "code": "contacts",
+        "status": "DECLINED",
+        "signedAt": "2023-06-04T09:25:43.522Z",
+        "version": 1,
+        "termUrl": "https://bere.al"
+    },
+    {
+        "code": "show-friends-to-friends",
+        "status": "ACCEPTED",
+        "version": 1,
+        "termUrl": "https://bere.al"
+    },
+    {
+        "code": "microphone",
+        "status": "ACCEPTED",
+        "signedAt": "2023-12-19T21:45:04.172Z",
+        "version": 1,
+        "termUrl": "https://bere.al"
+    },
+    {
+        "code": "apple-music",
+        "status": "UNKNOWN",
+        "version": 1,
+        "termUrl": "https://bere.al"
+    },
+    {
+        "code": "photo-library-read",
+        "status": "DECLINED",
+        "signedAt": "2024-10-08T18:26:39.742Z",
+        "version": 1,
+        "termUrl": "https://bere.al"
+    },
+    {
+        "code": "photo-library-write",
+        "status": "ACCEPTED",
+        "signedAt": "2024-10-08T18:26:39.743Z",
+        "version": 1,
+        "termUrl": "https://bere.al"
+    },
+    {
+        "code": "screen-recording",
+        "status": "UNKNOWN",
+        "version": 1,
+        "termUrl": "https://bere.al"
+    },
+    {
+        "code": "push-notifications",
+        "status": "UNKNOWN",
+        "version": 1,
+        "termUrl": "https://bere.al"
+    }
+]
