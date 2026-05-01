@@ -129,6 +129,22 @@ pub fn generate_memory_image(
     Ok(())
 }
 
+pub fn generate_memory_video(
+    front_image: &Media,
+    back_image: &Media,
+    bts_media: &Media,
+    output_path: &str,
+) -> Result<(), Box<dyn Error>> {
+    let frame_png = format!("{}.frame.png", output_path);
+
+    generate_memory_image(front_image, back_image, &frame_png)?;
+    append_frame_to_video(bts_media.get_local_path().as_str(), &frame_png, output_path)?;
+
+    let _ = std::fs::remove_file(&frame_png);
+
+    Ok(())
+}
+
 pub fn append_frame_to_video(
     input_video: &str,
     frame_png: &str,

@@ -22,4 +22,8 @@ impl Memory {
         let date_part = self.date.split('T').next().unwrap_or("");
         date_part
     }
+
+    pub fn bts_media(&self) -> Option<&Media> {
+        self.bts_media.as_ref()
+    }
 }

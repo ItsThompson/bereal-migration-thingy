@@ -1,5 +1,5 @@
 use bereal_local::models::memory::Memory;
-use bereal_local::services::memory_service::generate_memory_image;
+use bereal_local::services::memory_service::{generate_memory_image, generate_memory_video};
 use bereal_local::storage::paths::base_memory_file;
 use serde_json::Result;
 use std::fs::File;
@@ -15,12 +15,22 @@ fn read_memory_file() -> Result<()> {
             memory.front_image.get_local_path(),
             memory.back_image.get_local_path()
         );
-        generate_memory_image(
-            &memory.front_image,
-            &memory.back_image,
-            format!("memory_{}.png", memory.get_date()).as_str(),
-        )
-        .expect("Failed to generate memory image");
+        if let Some(bts) = memory.bts_media() {
+            generate_memory_video(
+                &memory.front_image,
+                &memory.back_image,
+                bts,
+                format!("memory_{}.mp4", memory.get_date()).as_str(),
+            )
+            .expect("Failed to generate memory video");
+        } else {
+            generate_memory_image(
+                &memory.front_image,
+                &memory.back_image,
+                format!("memory_{}.png", memory.get_date()).as_str(),
+            )
+            .expect("Failed to generate memory image");
+        }
         break;
     }
 
