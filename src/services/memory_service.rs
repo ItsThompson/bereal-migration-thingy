@@ -1,10 +1,8 @@
-use crate::models::image::Image;
+use crate::models::image::Media;
 use image::{ImageBuffer, Rgba};
 use std::error::Error;
+use std::process::Command;
 
-// -----------------------------
-// Rounded corner mask (FAST)
-// -----------------------------
 fn build_round_mask(w: u32, h: u32, radius: u32) -> Vec<u8> {
     let mut mask = vec![255u8; (w * h) as usize];
     let r2 = (radius * radius) as i32;
@@ -42,9 +40,6 @@ fn apply_mask(img: &mut [u8], mask: &[u8]) {
     }
 }
 
-// -----------------------------
-// Fast overlay (no rayon, cache-friendly)
-// -----------------------------
 fn overlay_top_left(
     background: &mut ImageBuffer<Rgba<u8>, Vec<u8>>,
     foreground: &ImageBuffer<Rgba<u8>, Vec<u8>>,
@@ -98,12 +93,9 @@ fn overlay_top_left(
     }
 }
 
-// -----------------------------
-// Main pipeline
-// -----------------------------
 pub fn generate_memory_image(
-    front_image: &Image,
-    back_image: &Image,
+    front_image: &Media,
+    back_image: &Media,
     output_path: &str,
 ) -> Result<(), Box<dyn Error>> {
     println!(
@@ -112,13 +104,9 @@ pub fn generate_memory_image(
         back_image.get_local_path()
     );
 
-    // Decode
     let mut back = image::open(back_image.get_local_path())?.to_rgba8();
     let front = image::open(front_image.get_local_path())?.to_rgba8();
 
-    // -----------------------------
-    // Resize front
-    // -----------------------------
     let target_width = back.width() / 4;
     let aspect = front.height() as f32 / front.width() as f32;
     let target_height = (target_width as f32 * aspect) as u32;
@@ -130,20 +118,64 @@ pub fn generate_memory_image(
         image::imageops::FilterType::Triangle,
     );
 
-    // -----------------------------
-    // Rounded corners (FAST MASK)
-    // -----------------------------
     let mask = build_round_mask(front_resized.width(), front_resized.height(), 20);
 
     apply_mask(front_resized.as_mut(), &mask);
 
-    // -----------------------------
-    // Overlay
-    // -----------------------------
     overlay_top_left(&mut back, &front_resized, 20);
 
-    // Save
     back.save(output_path)?;
+
+    Ok(())
+}
+
+pub fn append_frame_to_video(
+    input_video: &str,
+    frame_png: &str,
+    output_video: &str,
+) -> Result<(), Box<dyn Error>> {
+    let frame_video = "frame.mp4";
+    let list_file = "concat_list.txt";
+
+    // 1. Create 1s video from PNG
+    Command::new("ffmpeg")
+        .args([
+            "-y",
+            "-loop",
+            "1",
+            "-i",
+            frame_png,
+            "-t",
+            "1",
+            "-r",
+            "30",
+            "-pix_fmt",
+            "yuv420p",
+            frame_video,
+        ])
+        .status()?;
+
+    // 2. Create concat list
+    std::fs::write(
+        list_file,
+        format!("file '{}'\nfile '{}'\n", input_video, frame_video),
+    )?;
+
+    // 3. Concatenate
+    Command::new("ffmpeg")
+        .args([
+            "-y",
+            "-f",
+            "concat",
+            "-safe",
+            "0",
+            "-i",
+            list_file,
+            "-c",
+            "copy",
+            output_video,
+        ])
+        .status()?;
 
     Ok(())
 }

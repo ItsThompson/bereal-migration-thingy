@@ -1,19 +1,20 @@
 use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
 
-use crate::models::{image::Image, location::Location, music::Music};
+use crate::models::{image::Media, location::Location, music::Music};
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Memory {
-    pub back_image: Image,
-    bereal_moment: String,
+    pub front_image: Media,
+    pub back_image: Media,
     date: String,
-    pub front_image: Image,
+    bereal_moment: String,
     is_late: bool,
     location: Option<Location>,
     music: Option<Music>,
     taken_time: String,
+    bts_media: Option<Media>,
 }
 
 impl Memory {

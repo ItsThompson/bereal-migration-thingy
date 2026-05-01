@@ -6,7 +6,7 @@ use std::path::Path;
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Image {
+pub struct Media {
     bucket: String,
     height: i64,
     media_type: String,
@@ -15,7 +15,7 @@ pub struct Image {
     width: i64,
 }
 
-impl Image {
+impl Media {
     pub fn get_local_path(&self) -> String {
         let file_name = Path::new(&self.path)
             .file_name()
