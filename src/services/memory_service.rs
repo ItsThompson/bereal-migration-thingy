@@ -1,4 +1,6 @@
 use crate::models::image::Media;
+use chrono::DateTime;
+use filetime::FileTime;
 use image::{ImageBuffer, Rgba};
 use std::error::Error;
 use std::process::Command;
@@ -97,6 +99,7 @@ pub fn generate_memory_image(
     front_image: &Media,
     back_image: &Media,
     output_path: &str,
+    taken_time: &str,
 ) -> Result<(), Box<dyn Error>> {
     println!(
         "Generating memory image with front: {} and back: {}",
@@ -126,6 +129,8 @@ pub fn generate_memory_image(
 
     back.save(output_path)?;
 
+    set_file_date(output_path, taken_time)?;
+
     Ok(())
 }
 
@@ -134,13 +139,16 @@ pub fn generate_memory_video(
     back_image: &Media,
     bts_media: &Media,
     output_path: &str,
+    taken_time: &str,
 ) -> Result<(), Box<dyn Error>> {
     let frame_png = format!("{}.frame.png", output_path);
 
-    generate_memory_image(front_image, back_image, &frame_png)?;
-    append_frame_to_video(bts_media.get_local_path().as_str(), &frame_png, output_path)?;
+    generate_memory_image(front_image, back_image, &frame_png, taken_time)?;
+    append_frame_to_video(bts_media.get_local_path().as_str(), &frame_png, output_path, taken_time)?;
 
     let _ = std::fs::remove_file(&frame_png);
+
+    set_file_date(output_path, taken_time)?;
 
     Ok(())
 }
@@ -149,6 +157,7 @@ pub fn append_frame_to_video(
     input_video: &str,
     frame_png: &str,
     output_video: &str,
+    taken_time: &str,
 ) -> Result<(), Box<dyn Error>> {
     let img = image::open(frame_png)?;
     let w = img.width();
@@ -162,6 +171,8 @@ pub fn append_frame_to_video(
         [vid][img]concat=n=2:v=1:a=0[out]"
     );
 
+    let metadata_arg = format!("creation_time={taken_time}");
+
     let status = Command::new("ffmpeg")
         .args([
             "-y",
@@ -171,6 +182,7 @@ pub fn append_frame_to_video(
             "-map", "[out]",
             "-c:v", "libx264",
             "-pix_fmt", "yuv420p",
+            "-metadata", &metadata_arg,
             output_video,
         ])
         .status()?;
@@ -179,5 +191,12 @@ pub fn append_frame_to_video(
         return Err(format!("ffmpeg exited with status: {}", status).into());
     }
 
+    Ok(())
+}
+
+fn set_file_date(path: &str, taken_time: &str) -> Result<(), Box<dyn Error>> {
+    let dt = DateTime::parse_from_rfc3339(taken_time)?;
+    let ft = FileTime::from_unix_time(dt.timestamp(), dt.timestamp_subsec_nanos());
+    filetime::set_file_mtime(path, ft)?;
     Ok(())
 }

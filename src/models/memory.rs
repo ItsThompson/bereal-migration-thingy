@@ -26,4 +26,8 @@ impl Memory {
     pub fn bts_media(&self) -> Option<&Media> {
         self.bts_media.as_ref()
     }
+
+    pub fn taken_time(&self) -> &str {
+        &self.taken_time
+    }
 }

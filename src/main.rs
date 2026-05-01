@@ -21,6 +21,7 @@ fn read_memory_file() -> Result<()> {
                 &memory.back_image,
                 bts,
                 format!("memory_{}.mp4", memory.get_date()).as_str(),
+                memory.taken_time(),
             )
             .expect("Failed to generate memory video");
         } else {
@@ -28,6 +29,7 @@ fn read_memory_file() -> Result<()> {
                 &memory.front_image,
                 &memory.back_image,
                 format!("memory_{}.png", memory.get_date()).as_str(),
+                memory.taken_time(),
             )
             .expect("Failed to generate memory image");
         }
