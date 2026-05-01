@@ -104,6 +104,7 @@ fn overlay_top_left(
 pub fn generate_memory_image(
     front_image: &Image,
     back_image: &Image,
+    output_path: &str,
 ) -> Result<(), Box<dyn Error>> {
     println!(
         "Generating memory image with front: {} and back: {}",
@@ -142,9 +143,7 @@ pub fn generate_memory_image(
     overlay_top_left(&mut back, &front_resized, 20);
 
     // Save
-    back.save("output.png")?;
-
-    println!("Memory image generated: output.png");
+    back.save(output_path)?;
 
     Ok(())
 }

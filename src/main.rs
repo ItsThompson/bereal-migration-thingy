@@ -9,9 +9,20 @@ fn read_memory_file() -> Result<()> {
 
     let memories: Vec<Memory> = serde_json::from_reader(file).expect("file should be proper JSON");
 
-    let test = &memories[0];
-
-    let _ = generate_memory_image(&test.front_image, &test.back_image);
+    for memory in &memories {
+        println!(
+            "Front Image Path: {}, Back Image Path: {}",
+            memory.front_image.get_local_path(),
+            memory.back_image.get_local_path()
+        );
+        generate_memory_image(
+            &memory.front_image,
+            &memory.back_image,
+            format!("memory_{}.png", memory.get_date()).as_str(),
+        )
+        .expect("Failed to generate memory image");
+        break;
+    }
 
     Ok(())
 }

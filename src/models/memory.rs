@@ -15,3 +15,10 @@ pub struct Memory {
     music: Option<Music>,
     taken_time: String,
 }
+
+impl Memory {
+    pub fn get_date(&self) -> &str {
+        let date_part = self.date.split('T').next().unwrap_or("");
+        date_part
+    }
+}
