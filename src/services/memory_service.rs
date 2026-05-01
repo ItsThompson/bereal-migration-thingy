@@ -150,48 +150,34 @@ pub fn append_frame_to_video(
     frame_png: &str,
     output_video: &str,
 ) -> Result<(), Box<dyn Error>> {
-    let frame_video = "frame.mp4";
-    let list_file = "concat_list.txt";
+    let img = image::open(frame_png)?;
+    let w = img.width();
+    let h = img.height();
 
-    // 1. Create 1s video from PNG
-    Command::new("ffmpeg")
+    let filter = format!(
+        "[0:v]fps=30,scale={w}:{h}:force_original_aspect_ratio=decrease,\
+        pad={w}:{h}:(ow-iw)/2:(oh-ih)/2,format=yuv420p[img];\
+        [1:v]fps=30,scale={w}:{h}:force_original_aspect_ratio=decrease,\
+        pad={w}:{h}:(ow-iw)/2:(oh-ih)/2,format=yuv420p[vid];\
+        [vid][img]concat=n=2:v=1:a=0[out]"
+    );
+
+    let status = Command::new("ffmpeg")
         .args([
             "-y",
-            "-loop",
-            "1",
-            "-i",
-            frame_png,
-            "-t",
-            "1",
-            "-r",
-            "30",
-            "-pix_fmt",
-            "yuv420p",
-            frame_video,
-        ])
-        .status()?;
-
-    // 2. Create concat list
-    std::fs::write(
-        list_file,
-        format!("file '{}'\nfile '{}'\n", input_video, frame_video),
-    )?;
-
-    // 3. Concatenate
-    Command::new("ffmpeg")
-        .args([
-            "-y",
-            "-f",
-            "concat",
-            "-safe",
-            "0",
-            "-i",
-            list_file,
-            "-c",
-            "copy",
+            "-loop", "1", "-t", "1", "-i", frame_png,
+            "-i", input_video,
+            "-filter_complex", &filter,
+            "-map", "[out]",
+            "-c:v", "libx264",
+            "-pix_fmt", "yuv420p",
             output_video,
         ])
         .status()?;
+
+    if !status.success() {
+        return Err(format!("ffmpeg exited with status: {}", status).into());
+    }
 
     Ok(())
 }
