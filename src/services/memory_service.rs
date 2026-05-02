@@ -101,12 +101,6 @@ pub fn generate_memory_image(
     output_path: &str,
     taken_time: &str,
 ) -> Result<(), Box<dyn Error>> {
-    println!(
-        "Generating memory image with front: {} and back: {}",
-        front_image.get_local_path(),
-        back_image.get_local_path()
-    );
-
     let mut back = image::open(back_image.get_local_path())?.to_rgba8();
     let front = image::open(front_image.get_local_path())?.to_rgba8();
 
@@ -144,7 +138,12 @@ pub fn generate_memory_video(
     let frame_png = format!("{}.frame.png", output_path);
 
     generate_memory_image(front_image, back_image, &frame_png, taken_time)?;
-    append_frame_to_video(bts_media.get_local_path().as_str(), &frame_png, output_path, taken_time)?;
+    append_frame_to_video(
+        bts_media.get_local_path().as_str(),
+        &frame_png,
+        output_path,
+        taken_time,
+    )?;
 
     let _ = std::fs::remove_file(&frame_png);
 
@@ -176,13 +175,24 @@ pub fn append_frame_to_video(
     let status = Command::new("ffmpeg")
         .args([
             "-y",
-            "-loop", "1", "-t", "1", "-i", frame_png,
-            "-i", input_video,
-            "-filter_complex", &filter,
-            "-map", "[out]",
-            "-c:v", "libx264",
-            "-pix_fmt", "yuv420p",
-            "-metadata", &metadata_arg,
+            "-loop",
+            "1",
+            "-t",
+            "1",
+            "-i",
+            frame_png,
+            "-i",
+            input_video,
+            "-filter_complex",
+            &filter,
+            "-map",
+            "[out]",
+            "-c:v",
+            "libx264",
+            "-pix_fmt",
+            "yuv420p",
+            "-metadata",
+            &metadata_arg,
             output_video,
         ])
         .status()?;
